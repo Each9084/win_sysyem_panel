@@ -1,0 +1,20 @@
+{
+    "@@locale": "zh",
+    "appTitle": "Windows 系统控制台",
+
+    "opShutdown": "定时关机",
+    "opRestart": "定时重启",
+    "opHibernate": "定时休眠",
+    "opCancel": "取消任务",
+
+    "statusReady": "系统就绪",
+    "statusScheduled": "定时任务已启动",
+    "statusNoTask": "当前无定时任务",
+
+    "logTaskStarted": "任务已计划在 {time} 执行。",
+    "logTaskAborted": "用户已取消当前任务。",
+    "logCommandFailed": "命令执行失败：请检查权限。",
+
+    "timeUnitMinutes":"分钟",
+    "opSchedule":"启动定时"
+}

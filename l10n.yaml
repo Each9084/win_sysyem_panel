@@ -1,0 +1,5 @@
+# Flutter 国际化文件的配置
+arb-dir: lib/i18n/l10n    # 指定 ARB 文件（翻译文件）的存放目录
+template-arb-file: app_en.arb # 指定基础模板文件（以英文为基础）
+output-localization-file: app_localizations.dart # 自动生成的 Dart 文件名
+synthetic-package: false # 设为 false，以确保生成的类名可以在项目中导入

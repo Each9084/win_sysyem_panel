@@ -1,0 +1,21 @@
+{
+    "@@locale": "en",
+    "appTitle": "Win System Panel",
+
+    "opShutdown": "Shutdown",
+    "opRestart": "Restart",
+    "opHibernate": "Hibernate",
+    "opCancel": "Cancel Task",
+
+    "statusReady": "System Ready",
+    "statusScheduled": "Scheduled Shutdown",
+    "statusNoTask": "No Task Scheduled",
+
+    "logTaskStarted": "Task scheduled for {time}.",
+    "logTaskAborted": "Task aborted by user.",
+    "logCommandFailed": "Command execution failed: Check permissions.",
+
+    "timeUnitMinutes":"minutes",
+    "opSchedule":"Schedule Task"
+
+}
