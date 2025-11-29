@@ -1,4 +1,5 @@
 //这个页面将作为应用侧边栏切换后的主要内容
+//不执行系统命令，只负责监听状态、收集用户输入，并将指令发送给 PowerController
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class PowerControlPage extends ConsumerStatefulWidget {
   const PowerControlPage({super.key});
 
   // 使用 ConsumerStatefulWidget 来访问 Riverpod 状态
+  //允许许 State 对象_PowerControlPageState 访问 Riverpod 容器，从而读取或监听全局状态（例如 PowerController）
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
       _PowerControlPageState();
@@ -29,8 +31,11 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
     //访问多语言实例
     final t = AppLocalizations.of(context);
     //监听PowerController的状态(当前任务)
+    // 如果状态发生变化（例如启动、取消），即重新运行build 方法来更新 UI。
     final currentTask = ref.watch(powerControllerProvider);
     // 监听 PowerController 的实例（用于执行操作）
+    // 获取 PowerController 的实例（Notifier 对象）
+
     final controller = ref.read(powerControllerProvider.notifier);
 
     //判断是否有任务在执行
@@ -187,7 +192,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
 
     // 使用 SegmentedButton 来实现科幻感的按钮组
     return AbsorbPointer(
-        // 任务运行时禁用选择器
+        // 任务运行时禁用选择器,让用户不能再切换
         absorbing: isTaskRunning,
         child: SegmentedButton<PowerOperation>(
           style: SegmentedButton.styleFrom(
