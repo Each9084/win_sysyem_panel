@@ -50,4 +50,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get switchDarkMode => 'Switch to Dark Mode';
+
+  @override
+  String get deviceInfoTitle => 'Device Status';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get infoTitle => 'About & Info';
 }

@@ -19,6 +19,10 @@
     "opSchedule":"启动定时",
 
     "switchLightMode":"切换到浅色模式",
-        "switchDarkMode":"切换到深色模式"
+    "switchDarkMode":"切换到深色模式",
+
+    "deviceInfoTitle":"设备状态",
+    "settingsTitle":"设置",
+    "infoTitle":"关于与信息"
 
 }

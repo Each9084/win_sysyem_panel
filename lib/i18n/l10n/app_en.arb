@@ -19,6 +19,10 @@
     "opSchedule":"Schedule Task",
 
     "switchLightMode":"Switch to Light Mode",
-    "switchDarkMode":"Switch to Dark Mode"
+    "switchDarkMode":"Switch to Dark Mode",
+
+    "deviceInfoTitle":"Device Status",
+    "settingsTitle":"Settings",
+    "infoTitle":"About & Info"
 
 }

@@ -50,4 +50,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get switchDarkMode => '切换到深色模式';
+
+  @override
+  String get deviceInfoTitle => '设备状态';
+
+  @override
+  String get settingsTitle => '设置';
+
+  @override
+  String get infoTitle => '关于与信息';
 }

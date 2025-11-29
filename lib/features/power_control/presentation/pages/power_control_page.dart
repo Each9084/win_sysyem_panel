@@ -133,7 +133,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
               ),
               Text(
                 "${t.statusScheduled}(${currentTask.operation.name})",
-                style: TextStyle(color: Colors.white54),
+                style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
               )
             ],
           );

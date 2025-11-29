@@ -182,6 +182,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Switch to Dark Mode'**
   String get switchDarkMode;
+
+  /// No description provided for @deviceInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Status'**
+  String get deviceInfoTitle;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @infoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About & Info'**
+  String get infoTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
