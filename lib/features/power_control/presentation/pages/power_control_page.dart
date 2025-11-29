@@ -61,8 +61,11 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
                     isTaskRuning ? t!.statusScheduled : t!.statusReady,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          color:
-                              isTaskRuning ? colorScheme.primary : Colors.white70,
+                          color: isTaskRuning
+                              ? colorScheme.primary
+                              : Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white70
+                                  : Colors.blueGrey,
                           fontSize: 28,
                           letterSpacing: 1.5,
                         ),
@@ -74,13 +77,13 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
                   _buildTimeDisplay(
                       context, currentTask, isTaskRuning, controller),
                   const SizedBox(height: 40),
-          
+
                   //操作选择区域 (关机/重启/休眠)
                   _buildOperationSelector(t, colorScheme, isTaskRuning),
                   const SizedBox(
                     height: 40,
                   ),
-          
+
                   // 主要操作按钮 (启动/取消)
                   isTaskRuning
                       ? _buildCancelButton(t, controller)

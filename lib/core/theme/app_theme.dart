@@ -62,7 +62,7 @@ class AppTheme {
   }
 
   // --- 浅色主题定义 (新增) ---
-  static const Color _scaffoldBackGroundLight = Color(0xFFE9F0F8);
+  static const Color _scaffoldBackGroundLight = Color(0xFFF0F4F8);
   static const Color _surfaceLight = Colors.white;
 
   static ThemeData get lightTheme {

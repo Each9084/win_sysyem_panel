@@ -16,5 +16,9 @@
     "logCommandFailed": "命令执行失败：请检查权限。",
 
     "timeUnitMinutes":"分钟",
-    "opSchedule":"启动定时"
+    "opSchedule":"启动定时",
+
+    "switchLightMode":"切换到浅色模式",
+        "switchDarkMode":"切换到深色模式"
+
 }

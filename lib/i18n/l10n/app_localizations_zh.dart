@@ -44,4 +44,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get opSchedule => '启动定时';
+
+  @override
+  String get switchLightMode => '切换到浅色模式';
+
+  @override
+  String get switchDarkMode => '切换到深色模式';
 }

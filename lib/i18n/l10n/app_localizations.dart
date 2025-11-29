@@ -170,6 +170,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Schedule Task'**
   String get opSchedule;
+
+  /// No description provided for @switchLightMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Light Mode'**
+  String get switchLightMode;
+
+  /// No description provided for @switchDarkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Dark Mode'**
+  String get switchDarkMode;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

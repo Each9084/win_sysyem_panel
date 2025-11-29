@@ -16,6 +16,9 @@
     "logCommandFailed": "Command execution failed: Check permissions.",
 
     "timeUnitMinutes":"minutes",
-    "opSchedule":"Schedule Task"
+    "opSchedule":"Schedule Task",
+
+    "switchLightMode":"Switch to Light Mode",
+    "switchDarkMode":"Switch to Dark Mode"
 
 }

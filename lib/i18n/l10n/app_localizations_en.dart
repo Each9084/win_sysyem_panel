@@ -44,4 +44,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get opSchedule => 'Schedule Task';
+
+  @override
+  String get switchLightMode => 'Switch to Light Mode';
+
+  @override
+  String get switchDarkMode => 'Switch to Dark Mode';
 }
