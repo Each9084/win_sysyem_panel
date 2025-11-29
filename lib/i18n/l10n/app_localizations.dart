@@ -200,6 +200,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About & Info'**
   String get infoTitle;
+
+  /// No description provided for @underConstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'(Under Construction)'**
+  String get underConstruction;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

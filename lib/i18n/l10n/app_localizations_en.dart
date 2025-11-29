@@ -59,4 +59,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get infoTitle => 'About & Info';
+
+  @override
+  String get underConstruction => '(Under Construction)';
 }

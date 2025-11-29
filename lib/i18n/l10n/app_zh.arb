@@ -23,6 +23,7 @@
 
     "deviceInfoTitle":"设备状态",
     "settingsTitle":"设置",
-    "infoTitle":"关于与信息"
+    "infoTitle":"关于与信息",
+    "underConstruction":"(正在开发中)"
 
 }

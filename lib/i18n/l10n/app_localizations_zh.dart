@@ -59,4 +59,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get infoTitle => '关于与信息';
+
+  @override
+  String get underConstruction => '(正在开发中)';
 }

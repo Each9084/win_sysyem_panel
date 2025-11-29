@@ -23,6 +23,7 @@
 
     "deviceInfoTitle":"Device Status",
     "settingsTitle":"Settings",
-    "infoTitle":"About & Info"
+    "infoTitle":"About & Info",
+    "underConstruction":"(Under Construction)"
 
 }

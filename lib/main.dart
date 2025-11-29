@@ -88,14 +88,13 @@ class WinSystemPanelApp extends ConsumerWidget {
 }
 
 class EmptyPage extends StatelessWidget {
-  const EmptyPage({super.key});
+  final String label; //加构造函数来显示不同的占位符
+  const EmptyPage(this.label, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Todo 记得修复这个硬编码
     return Center(
-        child: Text(
-            'Under Construction: ${AppLocalizations.of(context)!.deviceInfoTitle}',
+        child: Text(label,
             style:
                 TextStyle(color: Theme.of(context).colorScheme.onBackground)));
   }
@@ -106,12 +105,21 @@ class MainScaffold extends ConsumerWidget with WindowListener {
   // 继承 WindowListener 用于窗口事件
   const MainScaffold({super.key});
 
-  Widget _getPageWidget(MainPanelPage page) {
+  // 用于根据选中的页面返回对应的 Widget
+  Widget _getPageWidget(MainPanelPage page, AppLocalizations t) {
     switch (page) {
       case MainPanelPage.powerControl:
         return const PowerControlPage();
+      //TODO 未来完善deviceInfo
       case MainPanelPage.deviceInfo:
-        return const EmptyPage(); // 暂时使用占位符
+        return EmptyPage('${t.deviceInfoTitle} ${t.underConstruction}');
+      //TODO 未来完善settings
+      case MainPanelPage.settings:
+        return EmptyPage('${t.deviceInfoTitle} ${t.underConstruction}');
+      //TODO 未来完善about
+      case MainPanelPage.about:
+        return EmptyPage('${t.deviceInfoTitle} ${t.underConstruction}');
+      // 暂时使用占位符
       default:
         return const Center(
           child: Text("Error Page"),
@@ -136,10 +144,19 @@ class MainScaffold extends ConsumerWidget with WindowListener {
         icon: Icons.monitor_heart,
         label: t.deviceInfoTitle
       ),
+      MainPanelPage.settings: (
+        icon: CupertinoIcons.settings,
+        label: t.settingsTitle
+      ),
+      MainPanelPage.about: (
+      icon: CupertinoIcons.info,
+      label: t.infoTitle
+      )
     };
 
     return Container(
-      width: 70,
+      //控制侧边栏的宽度
+      width: 180,
       height: double.infinity,
       decoration: BoxDecoration(
         color: colorScheme.surface.withOpacity(0.5),
@@ -156,36 +173,13 @@ class MainScaffold extends ConsumerWidget with WindowListener {
             final item = entry.value;
             final isSelected = page == selectedPage;
 
-            return Expanded(
-              child: Tooltip(
-                message: item.label,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 8.0),
-                  child: InkWell(
-                    onTap: () => controller.selectPage(page),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: isSelected
-                              ? colorScheme.primary.withOpacity(0.2)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                          border: isSelected
-                              ? Border.all(
-                                  color: colorScheme.primary, width: 1.5)
-                              : null),
-                      child: Icon(
-                        item.icon,
-                        color: isSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurface.withOpacity(0.7),
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            return _buildSidebarItem(
+              context: context,
+              icon: item.icon,
+              label: item.label,
+              isSelected: isSelected,
+              onTap: () => controller.selectPage(page),
+              colorScheme: colorScheme,
             );
           }).toList(),
 
@@ -194,20 +188,27 @@ class MainScaffold extends ConsumerWidget with WindowListener {
           Divider(color: colorScheme.onSurface.withOpacity(0.1), height: 1),
 
           //底部右侧：设置齿轮
-          _buildBottomIcon(
-              icon: CupertinoIcons.settings,
-              tooltip: t.settingsTitle,
-              onTap: () {
-                // TODO: 未来打开设置页
-              },
-              color: colorScheme.onSurface),
-          _buildBottomIcon(
-              icon: CupertinoIcons.info_circle,
-              tooltip: t.infoTitle,
-              onTap: () {
-                // TODO: 未来打开信息页
-              },
-              color: colorScheme.onSurface),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildBottomIcon(
+                      icon: CupertinoIcons.settings,
+                      tooltip: t.settingsTitle,
+                      onTap: () {
+                        // TODO: 未来打开设置页
+                      },
+                      color: colorScheme.onSurface),
+                  _buildBottomIcon(
+                      icon: CupertinoIcons.info_circle,
+                      tooltip: t.infoTitle,
+                      onTap: () {
+                        // TODO: 未来打开信息页
+                      },
+                      color: colorScheme.onSurface),
+                ]),
+          ),
         ],
       ),
     );
@@ -286,7 +287,7 @@ class MainScaffold extends ConsumerWidget with WindowListener {
                 _buildSidebar(context, ref, t),
                 Expanded(
                   child: SingleChildScrollView(
-                    child: _getPageWidget(currentPage),
+                    child: _getPageWidget(currentPage,t),
                   ),
                 )
               ],
@@ -296,6 +297,66 @@ class MainScaffold extends ConsumerWidget with WindowListener {
       ),
     );
   }
+}
+
+// ----------------------------------------------------
+// 辅助方法：构建单个侧边栏选项 (图标 + 文本)
+// ----------------------------------------------------
+Widget _buildSidebarItem({
+  required BuildContext context,
+  required IconData icon,
+  required String label,
+  required bool isSelected,
+  required VoidCallback onTap,
+  required ColorScheme colorScheme,
+}) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 48,
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colorScheme.primary.withOpacity(0.2)
+              : Colors.transparent,
+          border: isSelected
+              ? Border.all(color: colorScheme.primary, width: 1.5)
+              : null,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.onSurface.withOpacity(0.7),
+              size: 20,
+            ),
+            const SizedBox(
+              width: 12,
+            ),
+            Expanded(
+              // 确保文本在剩余空间内显示
+              child: Text(
+                label,
+                style: TextStyle(
+                    color: isSelected
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurface.withOpacity(0.8),
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 Widget _buildBottomIcon(
