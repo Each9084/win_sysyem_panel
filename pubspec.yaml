@@ -46,6 +46,8 @@ dependencies:
 
   # 托盘管理 (新增)
   system_tray: ^2.0.3
+  system_resources: ^1.6.0
+  system_info2: ^4.1.0
 
 dev_dependencies:
   flutter_test:
