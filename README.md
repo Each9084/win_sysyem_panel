@@ -4,7 +4,7 @@
 
 主要电源界面:
 
-![1](../assets/1.gif)
+![1](./assets/1.gif)
 
 
 
@@ -16,7 +16,7 @@
 
 性能监控:
 
-![3](../assets/3.gif)
+![3](./assets/3.gif)
 
 
 
@@ -109,7 +109,7 @@
 
 
 
-![structure](../assets/structure.png)
+![structure](./assets/structure.png)
 
 
 
