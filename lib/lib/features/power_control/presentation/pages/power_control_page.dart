@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../i18n/l10n/app_localizations.dart';
+import '../../../../../i18n/l10n/app_localizations.dart';
 import '../../application/power_controller.dart';
 import '../../domain/power_task.dart';
 

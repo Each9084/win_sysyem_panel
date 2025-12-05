@@ -33,6 +33,34 @@
     "runningTaskMessage":"定时操作 {taskName} 已计划在 {time} 执行。您希望如何处理？",
     "@runningTaskMessagePlaceholder":{"type": "String", "example": "定时关机", "parameters": ["taskName", "time"]},
     "optionExitAndCancel":"退出并取消任务",
-    "optionMinimizeToTray":"最小化到托盘"
+    "optionMinimizeToTray":"最小化到托盘",
+
+    "performanceMonitoring": "实时性能监控",
+      "@performanceMonitoring": {},
+
+      "systemDetails": "硬件与系统详情",
+      "@systemDetails": {},
+
+      "cpuModel": "CPU 型号",
+      "@cpuModel": {},
+
+      "totalMemory": "总内存",
+      "@totalMemory": {},
+
+      "systemManufacturer": "系统制造商",
+      "@systemManufacturer": {},
+
+      "systemModel": "系统型号",
+      "@systemModel": {},
+
+      "gpuModel": "GPU 型号",
+      "@gpuModel": {},
+
+      "dataLoadFailed": "数据加载失败：{error}",
+      "@dataLoadFailed": {
+        "placeholders": {
+          "error": {}
+        }
+      }
 
 }

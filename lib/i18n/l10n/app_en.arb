@@ -33,6 +33,34 @@
     "runningTaskMessage":"The power operation '{taskName}' is scheduled to execute at {time}. What would you like to do?",
     "@runningTaskMessagePlaceholder":{"type": "String", "example": "Shutdown", "parameters": ["taskName", "time"]},
     "optionExitAndCancel":"Exit and Cancel Task",
-    "optionMinimizeToTray":"Minimize to Tray"
+    "optionMinimizeToTray":"Minimize to Tray",
+
+    "performanceMonitoring": "Real-time Performance Monitoring",
+      "@performanceMonitoring": {},
+
+      "systemDetails": "Hardware & System Details",
+      "@systemDetails": {},
+
+      "cpuModel": "CPU Model",
+      "@cpuModel": {},
+
+      "totalMemory": "Total Memory",
+      "@totalMemory": {},
+
+      "systemManufacturer": "System Manufacturer",
+      "@systemManufacturer": {},
+
+      "systemModel": "System Model",
+      "@systemModel": {},
+
+      "gpuModel": "GPU Model",
+      "@gpuModel": {},
+
+      "dataLoadFailed": "Failed to load data: {error}",
+      "@dataLoadFailed": {
+        "placeholders": {
+          "error": {}
+        }
+      }
 
 }
