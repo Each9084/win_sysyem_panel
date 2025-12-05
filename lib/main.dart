@@ -2,27 +2,27 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'lib/core/config/navigation_controller.dart';
-import 'lib/core/config/theme_controller.dart';
-import 'lib/core/theme/app_theme.dart';
-import 'lib/features/power_control/application/power_controller.dart';
-import 'lib/features/power_control/domain/power_task.dart';
-import 'lib/features/power_control/presentation/pages/power_control_page.dart';
-import 'lib/i18n/l10n/app_localizations.dart';
+import 'core/config/navigation_controller.dart';
+import 'core/config/theme_controller.dart';
+import 'core/theme/app_theme.dart';
+import 'features/device_info/presentation/device_info_page.dart';
+import 'features/power_control/application/power_controller.dart';
+import 'features/power_control/domain/power_task.dart';
+import 'features/power_control/presentation/pages/power_control_page.dart';
+import 'i18n/l10n/app_localizations.dart';
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:system_tray/system_tray.dart';
 import 'package:window_manager/window_manager.dart';
 
-
+import 'i18n/localization_manager.dart';
 
 late AppWindow _appWindow;
 late SystemTray _systemTray;
@@ -94,29 +94,23 @@ class WinSystemPanelApp extends ConsumerWidget {
     // 监听主题状态，当状态变化时，MaterialApp 会自动重建
     final themeMode = ref.watch(themeControllerProvider);
 
+    // 新的多语言 监听 LocalizationManager 的状态 (字符串 Map)
+    final strings = ref.watch(localizationManagerProvider);
+
+    if (strings.isEmpty) {
+      // 正在加载或加载失败
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    // 使用新的翻译方法获取 appTitle
+    final appTitle = strings['appTitle'] ?? 'Win System Panel';
+
     return MaterialApp(
       //去掉debug
       debugShowCheckedModeBanner: false,
-      title: 'WinSystemPanel',
-
-      // ---多语言配置 ---
-      // 自动从 ARB 文件中获取支持的语言
-      supportedLocales: AppLocalizations.supportedLocales,
-      //支持的语言列表
-      localizationsDelegates: const [
-        //本地化代理列表
-        AppLocalizations.delegate,
-        // 我们的代理 加载在 ARB 文件中定义的字符串。
-        GlobalMaterialLocalizations.delegate,
-        //加载标准 Material 组件中需要的文本。
-        GlobalCupertinoLocalizations.delegate,
-        //加载 iOS 风格（Cupertino）组件的文本。
-        GlobalWidgetsLocalizations.delegate,
-        //加载所有其他不属于 Material 或 Cupertino 的基础 Widgets 文本。
-      ],
-
-      // Fallback 语言（如果没有用户的语言包，则使用英文）
-      locale: const Locale('en'),
+      title: appTitle,
 
       //应用我的科幻主题
       //themeMode: ThemeMode.dark,老版本
@@ -140,7 +134,7 @@ class EmptyPage extends StatelessWidget {
     return Center(
         child: Text(label,
             style:
-            TextStyle(color: Theme.of(context).colorScheme.onBackground)));
+                TextStyle(color: Theme.of(context).colorScheme.onBackground)));
   }
 }
 
@@ -197,6 +191,9 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
   // 必须将智能关闭逻辑粘贴到 _MainScaffoldState 类中
   @override
   Future<void> onWindowClose() async {
+    // 获取翻译服务实例
+    final manager = ref.t;
+
     // 1. 读取 PowerController 状态
     // 控制器，用于取消任务
     final powerController = ref.read(powerControllerProvider.notifier);
@@ -208,24 +205,27 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
       String taskDescription;
       switch (currentTask.operation) {
         case PowerOperation.shutdown:
-          taskDescription = t.opShutdown;
+          taskDescription = manager.translate('opShutdown');
           break;
         case PowerOperation.restart:
-          taskDescription = t.opRestart;
+          taskDescription = manager.translate('opRestart');
           break;
         case PowerOperation.hibernate:
-          taskDescription = t.opHibernate;
+          taskDescription = manager.translate('opHibernate');
           break;
         default:
-          taskDescription = t.statusScheduled;
+          taskDescription = manager.translate('statusScheduled');
       }
 
       // 格式化时间（虽然 SnackBar 不会实时倒计时，但显示启动时间是必要的）
       final timeString =
-      TimeOfDay.fromDateTime(currentTask.scheduledAt!).format(context);
+          TimeOfDay.fromDateTime(currentTask.scheduledAt!).format(context);
 
-      //  占位符似乎有bug
-      final message = t.runningTaskMessage(taskDescription, timeString);
+      // 使用 manager.translate() 处理带占位符的字符串
+      final message = manager.translate('runningTaskMessage', replacements: {
+        'taskName': taskDescription,
+        'time': timeString,
+      });
 
       final result = await showDialog<bool>(
           context: context,
@@ -242,7 +242,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                     color: dialogColorScheme.primary.withOpacity(0.5),
                     width: 2),
               ),
-              title: Text(t.runningTaskTitle,
+              title: Text(manager.translate('runningTaskTitle'),
                   style: TextStyle(
                       color: dialogColorScheme.primary,
                       fontWeight: FontWeight.bold)),
@@ -257,7 +257,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                       Navigator.of(dialogContext).pop(false); //退出
                     },
                     child: Text(
-                      t.optionExitAndCancel,
+                      manager.translate('optionExitAndCancel'),
                       style: TextStyle(
                           color: dialogColorScheme.onSurface.withOpacity(0.7)),
                     )),
@@ -269,7 +269,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                     onPressed: () {
                       Navigator.of(dialogContext).pop(true);
                     },
-                    child: Text(t.optionMinimizeToTray))
+                    child: Text(manager.translate('optionMinimizeToTray')))
               ],
             );
           });
@@ -308,20 +308,23 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
   }
 
   // 用于根据选中的页面返回对应的 Widget
-  Widget _getPageWidget(MainPanelPage page, AppLocalizations t) {
+  Widget _getPageWidget(MainPanelPage page) {
+    final manager = ref.t;
     switch (page) {
       case MainPanelPage.powerControl:
         return const PowerControlPage();
-    //TODO 未来完善deviceInfo
+      //TODO 未来完善deviceInfo
       case MainPanelPage.deviceInfo:
-        return EmptyPage('${t.deviceInfoTitle} ${t.underConstruction}');
-    //TODO 未来完善settings
+        return const DeviceInfoPage();
+      //TODO 未来完善settings
       case MainPanelPage.settings:
-        return EmptyPage('${t.deviceInfoTitle} ${t.underConstruction}');
-    //TODO 未来完善about
+        return EmptyPage(
+            '${manager.translate('settingsTitle')} ${manager.translate('underConstruction')}');
+      //TODO 未来完善about
       case MainPanelPage.about:
-        return EmptyPage('${t.deviceInfoTitle} ${t.underConstruction}');
-    // 暂时使用占位符
+        return EmptyPage(
+            '${manager.translate('infoTitle')} ${manager.translate('underConstruction')}');
+      // 暂时使用占位符
       default:
         return const Center(
           child: Text("Error Page"),
@@ -330,8 +333,8 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
   }
 
   // 构建Sidebar
-  Widget _buildSidebar(
-      BuildContext context, WidgetRef ref, AppLocalizations t) {
+  Widget _buildSidebar(BuildContext context, WidgetRef ref) {
+    final manager = ref.t;
     final colorScheme = Theme.of(context).colorScheme;
     final selectedPage = ref.watch(navigationProvider);
     final controller = ref.read(navigationProvider.notifier);
@@ -339,18 +342,21 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
     // 映射导航枚举到 UI 细节
     final Map<MainPanelPage, ({IconData icon, String label})> navItems = {
       MainPanelPage.powerControl: (
-      icon: Icons.power_settings_new,
-      label: t.opShutdown
+        icon: Icons.power_settings_new,
+        label: manager.translate('opShutdown')
       ),
       MainPanelPage.deviceInfo: (
-      icon: Icons.monitor_heart,
-      label: t.deviceInfoTitle
+        icon: Icons.monitor_heart,
+        label: manager.translate('deviceInfoTitle')
       ),
       MainPanelPage.settings: (
-      icon: CupertinoIcons.settings,
-      label: t.settingsTitle
+        icon: CupertinoIcons.settings,
+        label: manager.translate('settingsTitle')
       ),
-      MainPanelPage.about: (icon: CupertinoIcons.info, label: t.infoTitle)
+      MainPanelPage.about: (
+        icon: CupertinoIcons.info,
+        label: manager.translate('infoTitle')
+      )
     };
 
     return Container(
@@ -394,14 +400,14 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                 children: [
                   _buildBottomIcon(
                       icon: CupertinoIcons.settings,
-                      tooltip: t.settingsTitle,
+                      tooltip: manager.translate('settingsTitle'),
                       onTap: () {
                         // TODO: 未来打开设置页
                       },
                       color: colorScheme.onSurface),
                   _buildBottomIcon(
                       icon: CupertinoIcons.info_circle,
-                      tooltip: t.infoTitle,
+                      tooltip: manager.translate('infoTitle'),
                       onTap: () {
                         // TODO: 未来打开信息页
                       },
@@ -419,7 +425,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     //获取多语言实例
-    final t = AppLocalizations.of(context)!;
+    final manager = ref.t; // 新式使用 manager多语言
     final colorScheme = Theme.of(context).colorScheme;
 
     // 监听当前选中的页面
@@ -463,7 +469,9 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
                           : Icons.mode_night_outlined,
                       size: 16,
                     ),
-                    tooltip: isDarkMode ? t.switchDarkMode : t.switchLightMode),
+                    tooltip: isDarkMode
+                        ? manager.translate('switchDarkMode')
+                        : manager.translate('switchLightMode')),
 
                 IconButton(
                   icon: const Icon(Icons.minimize, size: 16),
@@ -484,10 +492,10 @@ class _MainScaffoldState extends ConsumerState<MainScaffold>
             child: Row(
               children: [
                 // 侧边栏
-                _buildSidebar(context, ref, t),
+                _buildSidebar(context, ref,),
                 Expanded(
                   child: SingleChildScrollView(
-                    child: _getPageWidget(currentPage, t),
+                    child: _getPageWidget(currentPage),
                   ),
                 )
               ],
@@ -548,7 +556,7 @@ Widget _buildSidebarItem({
                         ? colorScheme.onSurface
                         : colorScheme.onSurface.withOpacity(0.8),
                     fontWeight:
-                    isSelected ? FontWeight.bold : FontWeight.normal),
+                        isSelected ? FontWeight.bold : FontWeight.normal),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -561,9 +569,9 @@ Widget _buildSidebarItem({
 
 Widget _buildBottomIcon(
     {required IconData icon,
-      required String tooltip,
-      required VoidCallback onTap,
-      required Color color}) {
+    required String tooltip,
+    required VoidCallback onTap,
+    required Color color}) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 9.0),
     child: Tooltip(

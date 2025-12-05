@@ -8,25 +8,7 @@ enum PowerOperation{
   abort,//取消任务
 }
 
-// 为 PowerOperation 扩展一个方法，在不改变原有枚举纯粹性的情况,用于获取对应的多语言文本
-extension PowerOperationExtension on PowerOperation{
-  String toText(BuildContext context){
-    // ⚠️ 暂时引入 i18n 依赖，下一阶段会在 UI 层处理
-    // 为了让 domain 层保持纯净，这里先用英文占位，但在 UI 层我们会用 i18n
-    switch (this) {
-      case PowerOperation.shutdown:
-      // 在 UI 层，我们应该使用 AppLocalizations.of(context)!.opShutdown
-        return 'Shutdown';
-      case PowerOperation.restart:
-        return 'Restart';
-      case PowerOperation.hibernate:
-        return 'Hibernate';
-      case PowerOperation.abort:
-        return 'Cancelled';
-    }
 
-  }
-}
 
 //定义任务模型
 class PowerTask {

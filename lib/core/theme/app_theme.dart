@@ -43,7 +43,7 @@ class AppTheme {
       ),
 
       // 定义卡片样式
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: _surface,
         elevation: 8,
         shadowColor: Colors.black54,
@@ -80,7 +80,7 @@ class AppTheme {
         onSurface: Color(0xFF0F172A),
         onBackground: Color(0xFF0F172A),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: _surfaceLight,
         elevation: 4,
         shadowColor: Colors.black12,

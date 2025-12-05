@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:win_system_panel/lib/features/device_info/presentation/widgets/performance_chart.dart';
+import 'package:win_system_panel/features/device_info/presentation/widgets/performance_chart.dart';
 
-import '../../../i18n/l10n/app_localizations.dart';
+import '../../../i18n/localization_manager.dart';
 import '../../power_control/application/device_service.dart';
 import '../../power_control/domain/device_info.dart';
 
@@ -14,7 +14,8 @@ class DeviceInfoPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = AppLocalizations.of(context)!;
+    // 通过扩展获取 manager.notifier
+    final manager = ref.t;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
@@ -25,10 +26,10 @@ class DeviceInfoPage extends ConsumerWidget {
           // ----------------------------------------------------
           // 1. 顶部：实时性能监控区 (Chart)
           // ----------------------------------------------------
-          _buildSectionTitle(context, t.performanceMonitoring, colorScheme),
+          _buildSectionTitle(context, manager.translate('performanceMonitoring'), colorScheme),
           const SizedBox(height: 10),
 
-          _buildPerformanceChartSection(ref, colorScheme, t),
+          _buildPerformanceChartSection(ref, colorScheme),
 
           const SizedBox(height: 20),
           Divider(color: colorScheme.onBackground.withOpacity(0.1)),
@@ -37,10 +38,10 @@ class DeviceInfoPage extends ConsumerWidget {
           // ----------------------------------------------------
           // 2. 底部：硬件/系统信息详情区
           // ----------------------------------------------------
-          _buildSectionTitle(context, t.systemDetails, colorScheme),
+          _buildSectionTitle(context, manager.translate('systemDetails'), colorScheme),
           const SizedBox(height: 10),
 
-          _buildHardwareInfoSection(ref, colorScheme, t),
+          _buildHardwareInfoSection(ref, colorScheme),
         ],
       ),
     );
@@ -59,9 +60,10 @@ class DeviceInfoPage extends ConsumerWidget {
   }
 
   // 性能图表区
-  Widget _buildPerformanceChartSection(WidgetRef ref, ColorScheme colorScheme, AppLocalizations t) {
+  Widget _buildPerformanceChartSection(WidgetRef ref, ColorScheme colorScheme) {
     // 监听实时数据流，判断是否正在加载或出错
     final metricsAsync = ref.watch(systemMetricsStreamProvider);
+    final manager = ref.t; // 获取 manager
 
     return Container(
       height: 250,
@@ -74,7 +76,8 @@ class DeviceInfoPage extends ConsumerWidget {
       child: metricsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text(
-            t.dataLoadFailed(err.toString()), // 假设 dataLoadFailed 是存在的 i18n 键
+            manager.translate('dataLoadFailed', replacements: {'error': err.toString()}),
+            //t.dataLoadFailed(err.toString()), // 假设 dataLoadFailed 是存在的 i18n 键
             style: TextStyle(color: colorScheme.error)
         )),
         // 只要能获取到数据 (metrics)，就显示图表组件
@@ -86,31 +89,33 @@ class DeviceInfoPage extends ConsumerWidget {
   }
 
   // 硬件信息展示区
-  Widget _buildHardwareInfoSection(WidgetRef ref, ColorScheme colorScheme, AppLocalizations t) {
+  Widget _buildHardwareInfoSection(WidgetRef ref, ColorScheme colorScheme) {
     final infoAsync = ref.watch(hardwareInfoProvider);
+    final manager = ref.t; // 获取 manager
 
     return infoAsync.when(
       loading: () => const LinearProgressIndicator(),
       error: (err, stack) => Text(
-          t.dataLoadFailed(err.toString()),
+          manager.translate('dataLoadFailed', replacements: {'error': err.toString()}),
+          //t.dataLoadFailed(err.toString()),
           style: TextStyle(color: colorScheme.error)
       ),
       data: (info) {
-        return _buildInfoTable(info, colorScheme, t);
+        return _buildInfoTable(info, colorScheme,manager);
       },
     );
   }
 
   // 构建信息表格
-  Widget _buildInfoTable(HardwareInfo info, ColorScheme colorScheme, AppLocalizations t) {
+  Widget _buildInfoTable(HardwareInfo info, ColorScheme colorScheme,LocalizationManager manager) {
     // 定义 Key-Value 对，使用 i18n 键
     final infoMap = {
-      t.osName: info.osName,
-      t.cpuModel: info.cpuName,
-      t.totalMemory: '${info.totalMemoryGB} GB',
-      t.systemManufacturer: info.systemManufacturer,
-      t.systemModel: info.systemModel,
-      t.gpuModel: info.gpuName,
+      manager.translate("osName"): info.osName,
+      manager.translate("cpuModel"): info.cpuName,
+      manager.translate("totalMemory"): '${info.totalMemoryGB} GB',
+      manager.translate("systemManufacturer"): info.systemManufacturer,
+      manager.translate("systemModel"): info.systemModel,
+      manager.translate("gpuModel"): info.gpuName,
     };
 
     return Container(

@@ -9,6 +9,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../i18n/l10n/app_localizations.dart';
+import '../../../../i18n/localization_manager.dart';
 import '../../application/power_controller.dart';
 import '../../domain/power_task.dart';
 
@@ -29,8 +30,9 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
 
   @override
   Widget build(BuildContext context) {
-    //访问多语言实例
-    final t = AppLocalizations.of(context);
+    //引入新的本地化管理器
+    // 使用 ref.t 扩展属性，它返回 LocalizationManager.notifier
+    final manager = ref.t;
     //监听PowerController的状态(当前任务)
     // 如果状态发生变化（例如启动、取消），即重新运行build 方法来更新 UI。
     final currentTask = ref.watch(powerControllerProvider);
@@ -65,7 +67,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
                 children: <Widget>[
                   //标题/状态显示
                   Text(
-                    isTaskRuning ? t!.statusScheduled : t!.statusReady,
+                    manager.translate(isTaskRuning ? 'statusScheduled' : 'statusReady'),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                           color: isTaskRuning
@@ -82,11 +84,11 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
                   ),
                   //倒计时/选择时间区域
                   _buildTimeDisplay(
-                      context, currentTask, isTaskRuning, controller),
+                      context, currentTask, isTaskRuning, controller,manager),
                   const SizedBox(height: 40),
 
                   //操作选择区域 (关机/重启/休眠)
-                  _buildOperationSelector(t, colorScheme, isTaskRuning,
+                  _buildOperationSelector(manager, colorScheme, isTaskRuning,
                       selectedOperation, selectedOperationNotifier),
                   const SizedBox(
                     height: 40,
@@ -94,8 +96,8 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
 
                   // 主要操作按钮 (启动/取消)
                   isTaskRuning
-                      ? _buildCancelButton(t, controller)
-                      : _buildScheduleButton(t, colorScheme, controller,selectedOperation),
+                      ? _buildCancelButton(manager, controller)
+                      : _buildScheduleButton(manager, colorScheme, controller,selectedOperation),
                 ],
               ),
             ),
@@ -107,11 +109,24 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
 
   // --- 辅助构建方法 ---
 
+  // 在 PowerControlPage 中添加一个辅助方法（或直接在 build 中实现）：
+  String _getOperationName(PowerOperation op, LocalizationManager manager) {
+    switch (op) {
+      case PowerOperation.shutdown:
+        return manager.translate('opShutdown');
+      case PowerOperation.restart:
+        return manager.translate('opRestart');
+      case PowerOperation.hibernate:
+        return manager.translate('opHibernate');
+      default:
+        return manager.translate('opCancel');
+    }
+  }
+
   // 倒计时或时间选择器
   Widget _buildTimeDisplay(BuildContext context, PowerTask currentTask,
-      bool isTaskRunning, PowerController controller) {
+      bool isTaskRunning, PowerController controller,LocalizationManager manager) {
     final colorScheme = Theme.of(context).colorScheme;
-    final t = AppLocalizations.of(context)!;
     if (isTaskRunning) {
       return StreamBuilder<Duration>(
         stream: controller.countdownStream,
@@ -140,7 +155,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
                     fontFamily: "monospace"),
               ),
               Text(
-                "${t.statusScheduled}(${currentTask.operation.name})",
+                manager.translate('statusScheduled') + "(${_getOperationName(currentTask.operation, manager)})",
                 style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
               )
             ],
@@ -152,7 +167,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
       return Column(
         children: [
           Text(
-            t.statusNoTask,
+            manager.translate('statusNoTask'),
             style:
                 Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 16),
           ),
@@ -160,7 +175,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
             height: 10,
           ),
           Text(
-            "${_selectedDelayMinutes.round()}${t.timeUnitMinutes}",
+            "${_selectedDelayMinutes.round()}${manager.translate('timeUnitMinutes')}",
             // 假设 'timeUnitMinutes' 在 ARB 中是 '分钟'
             style: TextStyle(
                 fontSize: 48,
@@ -173,7 +188,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
             max: 120,
             divisions: 23,
             //分5钟一档
-            label: "${_selectedDelayMinutes.round()} ${t.timeUnitMinutes}",
+            label: "${_selectedDelayMinutes.round()} ${manager.translate('timeUnitMinutes')}",
             onChanged: (double value) {
               setState(() {
                 _selectedDelayMinutes = value;
@@ -187,7 +202,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
 
   //操作类型选择器
   Widget _buildOperationSelector(
-      AppLocalizations t,
+      LocalizationManager manager,
       ColorScheme colorScheme,
       bool isTaskRunning,
       PowerOperation selectedOperation,
@@ -200,9 +215,9 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
     ];
 
     final Map<PowerOperation, String> labels = {
-      PowerOperation.shutdown: t.opShutdown,
-      PowerOperation.restart: t.opRestart,
-      PowerOperation.hibernate: t.opHibernate,
+      PowerOperation.shutdown: manager.translate('opShutdown'),
+      PowerOperation.restart: manager.translate('opRestart'),
+      PowerOperation.hibernate: manager.translate('opHibernate'),
     };
 
     // 使用 SegmentedButton 来实现科幻感的按钮组
@@ -232,7 +247,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
 
   // 启动任务按钮
   Widget _buildScheduleButton(
-      AppLocalizations t,
+      LocalizationManager manager,
       ColorScheme colorScheme,
       PowerController controller,
       PowerOperation selectedOperation) {
@@ -243,7 +258,7 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
       },
       label: Text(
         // 假设 'opSchedule' 在 ARB 中是 '启动定时'
-        t.opSchedule,
+        manager.translate('opSchedule'),
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       ),
       style: FilledButton.styleFrom(
@@ -255,12 +270,12 @@ class _PowerControlPageState extends ConsumerState<PowerControlPage> {
   }
 
 // 取消任务按钮
-  Widget _buildCancelButton(AppLocalizations t, PowerController controller) {
+  Widget _buildCancelButton(LocalizationManager manager, PowerController controller) {
     return OutlinedButton.icon(
       onPressed: controller.abortTask,
       icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),
       label: Text(
-        t.opCancel,
+          manager.translate('opCancel'),
         style: const TextStyle(fontSize: 18, color: Colors.redAccent),
       ),
       style: OutlinedButton.styleFrom(

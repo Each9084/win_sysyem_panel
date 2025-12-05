@@ -35,8 +35,10 @@ final systemMetricsStreamProvider = StreamProvider<SystemMetrics>((ref) async* {
       // 1. 获取 CPU 负载 (Win32_Processor LoadPercentage)
       final cpuResult = await Process.run(
           'wmic', ['cpu', 'get', 'LoadPercentage', '/value']);
+      print('WMIC CPU Output: ${cpuResult.stdout}'); // 检查这里的输出是否包含 LoadPercentage=XX
       final cpuOutput = cpuResult.stdout.toString().trim();
 
+      // ✅ 修正 CPU 正则表达式解析：
       // 提取 LoadPercentage=XX 中的 XX
       final cpuMatch = RegExp(r'LoadPercentage=(\d+)').firstMatch(cpuOutput);
       final cpuLoad = cpuMatch != null ? double.tryParse(
@@ -87,7 +89,7 @@ final hardwareInfoProvider = FutureProvider<HardwareInfo>((ref) async {
   try {
     const int megabyte = 1024 * 1024;
     final cores = SysInfo.cores;
-
+    print('OS Name from SysInfo: ${SysInfo.operatingSystemName}');
     return HardwareInfo(
       osName: SysInfo.operatingSystemName,
       cpuName: cores.isNotEmpty ? cores.first.name : 'Unknown CPU',
@@ -96,6 +98,7 @@ final hardwareInfoProvider = FutureProvider<HardwareInfo>((ref) async {
       systemManufacturer: 'N/A (system_info2 not supported)',
       systemModel: 'N/A',
       gpuName: 'N/A (WMIC/system_info2 not supported)',
+
     );
   } catch (e) {
     print("获取静态硬件信息失败: $e");
